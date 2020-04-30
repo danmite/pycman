@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "pycman-1",
+			"path": "../pycman Kopie/pycman-1"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7"
+	}
+}
