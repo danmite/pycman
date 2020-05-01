@@ -2,10 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"name": "pycman-1",
-			"path": "../pycman Kopie/pycman-1"
 		}
 	],
 	"settings": {
