@@ -1,4 +1,6 @@
-import pygame, sys, copy
+import sys
+import pygame
+import copy
 from settings import *
 from player_class import Player
 from enemy_class import *
