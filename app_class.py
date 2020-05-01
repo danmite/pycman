@@ -23,6 +23,7 @@ class App:
         self.enemies = []
         self.e_pos = []
         self.p_pos = None
+        self.highscore = 0
         self.load()
 
         self.player = Player(self, vec(self.p_pos))
@@ -43,6 +44,10 @@ class App:
                 self.game_over_events()
                 self.game_over_update()
                 self.game_over_draw()
+            elif self.state == 'winner':
+                self.winner_events()
+                self.winner_update()
+                self.winner_draw()
             else:
                 self.running = False
             self.clock.tick(FPS)
@@ -82,6 +87,13 @@ class App:
                     elif char == "B":
                         pygame.draw.rect(self.background, BLACK, (xidx*self.cell_width, yidx*self.cell_height, self.cell_width, self.cell_height))
         #print(self.walls)
+
+        # read Highscore from highscore.txt
+        with open("highscore.txt", mode='r') as highscore_file:
+            for line in highscore_file:
+                name, var = line.partition("=")[::2]
+                self.highscore = int(var)
+
 
     def make_enemies(self):
         for idx, pos in enumerate(self.e_pos):
@@ -167,6 +179,18 @@ class App:
             if enemy.grid_pos == self.player.grid_pos:
                 self.remove_life()
 
+        if self.player.current_score == 287:
+            if self.highscore < self.player.current_score:
+                self.write_highscore(self.player.current_score)
+            self.state = "winner"
+
+    def write_highscore(self, new_highscore):
+        with open("highscore.txt", "a+") as highscore_file:
+            line = highscore_file.readline()
+            highscore_file.truncate(0)
+            self.highscore = new_highscore
+            highscore_file.write('highscore={}'.format(self.highscore))
+            highscore_file.close()
 
     def playing_draw(self):
         self.screen.fill(BLACK)
@@ -174,7 +198,7 @@ class App:
         self.draw_grid()
         self.draw_coins()
         self.draw_text('CURRENT SCORE: {}'.format(self.player.current_score), self.screen, [70,5], 30, WHITE, START_FONT)
-        self.draw_text('HIGH SCORE: 0', self.screen, [WIDTH//2+60,5], 30, WHITE, START_FONT)
+        self.draw_text('HIGH SCORE: {}'.format(self.highscore), self.screen, [WIDTH//2+60,5], 30, WHITE, START_FONT)
         self.player.draw()
         for enemy in self.enemies:
             enemy.draw()
@@ -183,6 +207,8 @@ class App:
     def remove_life(self):
         self.player.lives -= 1
         if self.player.lives == 0:
+            # if self.highscore < self.player.current_score:
+            #     self.highscore = self.player.current_score
             self.state = "game over"
         else: 
             self.player.grid_pos = vec(self.player.starting_pos)
@@ -218,6 +244,39 @@ class App:
         again_text = "Press SPACE bar to PLAY AGAIN"
         quit_text = "Press the escape button to QUIT"
         self.draw_text("GAME OVER", self.screen, [WIDTH//2, 100], 36, RED, "arial", centered=True)
+        
+        if self.highscore < self.player.current_score:
+            self.write_highscore(self.player.current_score)
+            highscore_text = "New Highscore is {}".format(self.highscore)
+        else:
+            highscore_text = "Highscore is {}".format(self.highscore)
+        self.draw_text(highscore_text, self.screen, [WIDTH//2, 150], 36, YELLOW, "arial", centered=True)
+        self.draw_text(again_text, self.screen, [WIDTH//2, HEIGHT//2], 36, (190, 190, 190), "arial", centered=True)
+        self.draw_text(quit_text, self.screen, [WIDTH//2, HEIGHT//1.5], 36, (190, 190, 190), "arial", centered=True)
+        pygame.display.update()
+
+##################### WINNER FUNCTIONS #####################
+
+    def winner_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.reset()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.state = False
+
+    def winner_update(self):
+        pass
+    
+    def winner_draw(self):
+        self.screen.fill(BLACK)
+        again_text = "Press SPACE bar to PLAY AGAIN"
+        quit_text = "Press the escape button to QUIT"
+        winner_text = "YOU ARE A WINNER WITH {} POINTS".format(self.player.current_score)
+        highscore_text = "Highscore is {} points!".format(self.highscore)
+        self.draw_text(winner_text, self.screen, [WIDTH//2, 100], 36, YELLOW, "arial", centered=True)
+        self.draw_text(highscore_text, self.screen, [WIDTH//2, 150], 36, YELLOW, "arial", centered=True)
         self.draw_text(again_text, self.screen, [WIDTH//2, HEIGHT//2], 36, (190, 190, 190), "arial", centered=True)
         self.draw_text(quit_text, self.screen, [WIDTH//2, HEIGHT//1.5], 36, (190, 190, 190), "arial", centered=True)
         pygame.display.update()

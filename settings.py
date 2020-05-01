@@ -14,7 +14,9 @@ BLACK = (0,0,0)
 WHITE = (255, 255, 255)
 RED = (208,22,22)
 GREY = (107, 107, 107)
+YELLOW = (255, 231, 0)
 PLAYER_COLOR = (190, 194, 15)
+
 
 # font settings
 START_TEXT_SIZE = 30
